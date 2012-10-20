@@ -1,0 +1,1 @@
+alert("locale specific spanish");

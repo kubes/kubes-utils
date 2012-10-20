@@ -1,0 +1,31 @@
+{
+    "global": true,
+    
+    "aliases" : {    
+      "alias1" : "/WEB-INF/js/global1.js",
+      "alias2" : "/WEB-INF/js/global2.js",
+      "alias3" : "/WEB-INF/css/global1.css",
+      "alias4" : "/WEB-INF/css/global2.css"            
+    },  
+    
+    "title" : "[[default.title]]",
+    
+    "meta" : [
+        {
+            "http-equiv": "Content-Type",
+            "content": "text/html; charset=utf-8" 
+        }    
+    ],
+    
+    "scripts" : [
+        "{{alias1}}",
+        "{{alias2}}",
+        "/WEB-INF/js/global3.js"       
+    ],  
+    
+    "links" : [
+        "{{alias3}}",
+        "{{alias4}}",   
+      "/WEB-INF/css/global3.css"
+    ] 
+}

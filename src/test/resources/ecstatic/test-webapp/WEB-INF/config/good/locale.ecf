@@ -1,0 +1,8 @@
+{
+    "ids": ["locale1"],
+        
+    "scripts" : [
+        "${alias2}",
+        "/WEB-INF/js/${locale.specific}.js"       
+    ]
+}

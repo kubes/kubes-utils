@@ -1,0 +1,26 @@
+{
+    "ids": ["good1"],
+    
+    "title" : "${good1.title}",
+
+    "meta" : [
+        {
+            "name": "keywords",
+            "content": "good1 keywords" 
+        },
+        {
+            "name": "description",
+            "content": "good1 description" 
+        }   
+    ],
+        
+    "scripts" : [
+        "${alias2}",
+        "/WEB-INF/js/global3.js"       
+    ],  
+    
+    "links" : [
+        "${alias4}",  
+      "/WEB-INF/css/global3.css"
+    ] 
+}
