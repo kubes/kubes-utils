@@ -35,16 +35,15 @@ import com.denniskubes.utils.FileIOUtils;
 public class WebAssetManager
   implements MessageSourceAware {
 
-  private final static Logger LOG =
-    LoggerFactory.getLogger(WebAssetManager.class);
+  private final static Logger LOG = LoggerFactory
+    .getLogger(WebAssetManager.class);
   public final static String GLOBAL = "_global_";
 
   private MessageSource messageSource;
 
   private AtomicBoolean active = new AtomicBoolean(false);
   private WebAssetParser webAssetParser = new WebAssetParser();
-  private Map<String, WebAssetConfig> idToConfig =
-    new HashMap<String, WebAssetConfig>();
+  private Map<String, WebAssetConfig> idToConfig = new HashMap<String, WebAssetConfig>();
   private String configDirectory;
   private String rootDirectory;
   private String cacheDirectory = "_ecstatic_cache_";
@@ -57,28 +56,21 @@ public class WebAssetManager
   // config file change monitoring
   private long reloadCheckInterval = 10000;
   private ConfigFileMonitor configFileMonitor;
-  private Map<String, Long> configLastModTimes =
-    new ConcurrentHashMap<String, Long>();
+  private Map<String, Long> configLastModTimes = new ConcurrentHashMap<String, Long>();
 
   // filters
-  private Map<String, WebAssetFilter> filters =
-    new HashMap<String, WebAssetFilter>();
+  private Map<String, WebAssetFilter> filters = new HashMap<String, WebAssetFilter>();
   private Map<String, String[]> typeToFilters = new HashMap<String, String[]>();
 
   // caches
   private boolean caching = false;
-  private Map<String, String> aliasesCache =
-    new ConcurrentHashMap<String, String>();
-  private Map<String, List> scriptsCache =
-    new ConcurrentHashMap<String, List>();
+  private Map<String, String> aliasesCache = new ConcurrentHashMap<String, String>();
+  private Map<String, List> scriptsCache = new ConcurrentHashMap<String, List>();
   private Map<String, List> metaCache = new ConcurrentHashMap<String, List>();
   private Map<String, List> linksCache = new ConcurrentHashMap<String, List>();
-  private Map<String, String> titleCache =
-    new ConcurrentHashMap<String, String>();
-  private Map<String, Long> assetLastModTimes =
-    new ConcurrentHashMap<String, Long>();
-  private Map<String, String> pathsCache =
-    new ConcurrentHashMap<String, String>();
+  private Map<String, String> titleCache = new ConcurrentHashMap<String, String>();
+  private Map<String, Long> assetLastModTimes = new ConcurrentHashMap<String, Long>();
+  private Map<String, String> pathsCache = new ConcurrentHashMap<String, String>();
 
   /**
    * A continuous looping thread that polls the file system for changes to all
@@ -316,9 +308,8 @@ public class WebAssetManager
         // write the file out to the cache, the parent directories of the
         // file will be created in the cache dir if they don't already exist
         File cacheFile = new File(cacheRoot, cachedPath);
-        boolean copyToCache =
-          !cacheFile.exists()
-            || (removeExistingCacheFiles && FileUtils.deleteQuietly(cacheFile));
+        boolean copyToCache = !cacheFile.exists()
+          || (removeExistingCacheFiles && FileUtils.deleteQuietly(cacheFile));
         if (copyToCache) {
           FileUtils.writeByteArrayToFile(cacheFile, cachedBytes);
           LOG.info("Added {} to cache as {}", assetFile.getPath(),
@@ -361,8 +352,14 @@ public class WebAssetManager
   public synchronized void startup()
     throws IOException {
 
-    // setup the cache directory
-    File tempCache = new File(rootDirectory, cacheDirectory);
+    // check that the root directory exists
+    File rootCache = new File(rootDirectory);
+    if (!rootCache.exists()) {
+      throw new IOException("Root directory doesn't exist.");
+    }
+
+    // create the cache directory if needed
+    File tempCache = new File(rootCache, cacheDirectory);
     boolean cacheExists = tempCache.exists();
     if (!cacheExists) {
       cacheExists = tempCache.mkdirs();
