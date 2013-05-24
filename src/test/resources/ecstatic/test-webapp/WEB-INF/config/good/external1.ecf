@@ -1,0 +1,20 @@
+{
+    "ids": ["external1"],
+    
+        
+    "scripts" : [
+        {
+          "type" : "text/javascript",
+          "path" : "ext:http://localhost/script1.js"
+        },
+        "ext:http://localhost/script2.js"       
+    ],  
+    
+    "links" : [
+        {
+          "type" : "text/javascript",
+          "path" : "ext:http://localhost/stylesheet1.css"
+        },
+        "ext:http://localhost/stylesheet2.css"       
+    ] 
+}

@@ -49,6 +49,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
     Assert.assertTrue(wam.getConfigForId("good1") != null);
     Assert.assertTrue(wam.getConfigForId("good2") != null);
@@ -57,7 +58,7 @@ public class TestWebAssetManager {
 
     File cacheFile = new File(rootFile, cacheDirectory);
     Assert.assertFalse(cacheFile.exists());
-  }
+  }  
 
   @Test
   public void testGlobalScripts()
@@ -68,6 +69,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     Assert.assertNull(wam.getCachedPath("/WEB-INF/js/global1.js"));
@@ -90,6 +92,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     Assert.assertNull(wam.getCachedPath("/WEB-INF/js/global2.js"));
@@ -111,6 +114,43 @@ public class TestWebAssetManager {
 
     wam.shutdown();
   }
+  
+
+  @Test
+  public void testExternal()
+    throws Exception {
+
+    Resource rootResource = new ClassPathResource(rootDirectory);
+    String fullRootPath = rootResource.getFile().getPath();
+    WebAssetManager wam = new WebAssetManager();
+    wam.setRootDirectory(fullRootPath);
+    wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
+    wam.startup();
+
+    Assert.assertNull(wam.getCachedPath("http://localhost/script1.js"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/script2.js"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/stylesheet1.css"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/stylesheet2.css"));
+    
+    List<Map<String, String>> scripts = wam.getScriptsForId("external1", Locale.US);
+    Assert.assertTrue(scripts != null && scripts.size() == 2);
+    Assert.assertEquals(scripts.get(0).get("path"), "http://localhost/script1.js");
+    Assert.assertEquals(scripts.get(1).get("path"), "http://localhost/script2.js");
+
+    List<Map<String, String>> links = wam.getLinksForId("external1", Locale.US);
+    Assert.assertTrue(links != null && links.size() == 2);
+    Assert.assertEquals(links.get(0).get("path"), "http://localhost/stylesheet1.css");
+    Assert.assertEquals(links.get(1).get("path"), "http://localhost/stylesheet2.css");
+    
+    Assert.assertNull(wam.getCachedPath("http://localhost/script1.js"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/script2.js"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/stylesheet1.css"));
+    Assert.assertNull(wam.getCachedPath("http://localhost/stylesheet2.css"));
+    
+    wam.shutdown();
+  }
+  
 
   @Test
   public void testGlobalLinks()
@@ -121,6 +161,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     Assert.assertNull(wam.getCachedPath("/WEB-INF/css/global1.css"));
@@ -144,6 +185,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     Assert.assertNull(wam.getCachedPath("/WEB-INF/css/global2.css"));
@@ -175,6 +217,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     List<Map<String, String>> metas = wam.getGlobalMetas(Locale.US);
@@ -195,6 +238,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     List<Map<String, String>> metas = wam.getMetasForId("good1", Locale.US);
@@ -223,6 +267,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.setMessageSource(messageSource);
     wam.startup();
 
@@ -244,6 +289,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.setMessageSource(messageSource);
     wam.startup();
 
@@ -262,6 +308,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.startup();
 
     Assert.assertNull(wam.getCachedPath("/WEB-INF/js/global2.js"));
@@ -300,6 +347,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.setMessageSource(messageSource);
     wam.startup();
 
@@ -337,6 +385,7 @@ public class TestWebAssetManager {
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
     wam.setConfigDirectory("/WEB-INF/config");
+    wam.setClearCacheOnShutdown(true);
     wam.setMessageSource(messageSource);
     wam.startup();
     
