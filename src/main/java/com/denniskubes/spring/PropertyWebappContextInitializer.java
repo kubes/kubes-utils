@@ -183,7 +183,7 @@ public class PropertyWebappContextInitializer
       if (StringUtils.isNotBlank(userProp)) {
         File userPropsRoot = new File(propertyRootDir, "users");
         if (userPropsRoot.exists() && userPropsRoot.isDirectory()) {
-          PrefixFileFilter userPrefixFilter = new PrefixFileFilter(envProp);
+          PrefixFileFilter userPrefixFilter = new PrefixFileFilter(userProp);
           collectFiles(propertyFiles, userPropsRoot, new OrFileFilter(
             dirFilter, new AndFileFilter(userPrefixFilter, propsFilter)));
         }

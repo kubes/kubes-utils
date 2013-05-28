@@ -247,12 +247,13 @@ public class WebAssetManager
       return false;
     }
 
-    // allow external scripts without modification
-    if (StringUtils.startsWith(assetPath, "ext:")) {
+    // allow external scripts without modification.  External scripts can be
+    // http|https|// prefixed.
+    if (assetPath.matches("^(https?)?:?//.*")) {
 
       // external scripts don't get cached or filtered their paths are passed
       // through as is with the external prefix stripped
-      attributes.put("path", StringUtils.substring(assetPath, 4));
+      attributes.put("path", assetPath);
       return true;
     }
 
@@ -275,7 +276,8 @@ public class WebAssetManager
 
         LOG.info("Filtering and caching {}", assetFile.getPath());
         
-        // remove asset prefixes for cached directory structure
+        // remove asset prefixes for cached directory structure, resulting path
+        // should be the parent of the asset file with the path prefix removed
         String pathPrefix = assetPath;
         for (String assetPrefix: assetPrefixes) {
           if (pathPrefix.startsWith(assetPrefix)) {
@@ -284,10 +286,8 @@ public class WebAssetManager
           }
         }
         
-        // remove any starting slash
-        if (pathPrefix.startsWith("/")) {
-          pathPrefix = StringUtils.substring(pathPrefix, 1);
-        }
+        // remove any starting slash and ending filename and extension
+        pathPrefix = FilenameUtils.getPath(pathPrefix);
 
         String assetName = FilenameUtils.getName(assetFile.getPath());
         String tempFilename = FilenameUtils.concat(pathPrefix, assetName);

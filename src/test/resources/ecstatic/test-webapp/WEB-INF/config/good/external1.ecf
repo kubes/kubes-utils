@@ -5,16 +5,16 @@
     "scripts" : [
         {
           "type" : "text/javascript",
-          "path" : "ext:http://localhost/script1.js"
+          "path" : "http://localhost/script1.js"
         },
-        "ext:http://localhost/script2.js"       
+        "http://localhost/script2.js"       
     ],  
     
     "links" : [
         {
           "type" : "text/javascript",
-          "path" : "ext:http://localhost/stylesheet1.css"
+          "path" : "http://localhost/stylesheet1.css"
         },
-        "ext:http://localhost/stylesheet2.css"       
+        "http://localhost/stylesheet2.css"       
     ] 
 }

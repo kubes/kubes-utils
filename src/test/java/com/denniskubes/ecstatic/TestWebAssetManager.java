@@ -326,7 +326,9 @@ public class TestWebAssetManager {
     File reloadFile = new File(fullRootPath, "/WEB-INF/js/reload1");
     FileUtils.copyFile(global2File, renamedFile);
     FileUtils.copyFile(reloadFile, global2File);
-    global2File.setLastModified(System.currentTimeMillis());
+    // must increase last modified or else some times it is the same as the 
+    // system current millis and won't reload and test fails
+    global2File.setLastModified(System.currentTimeMillis() + 1000);
     wam.getScriptsForId("good1", Locale.US);
     String newCached = wam.getCachedPath("/WEB-INF/js/global2.js");
     Assert.assertFalse(origCached.equals(newCached));
