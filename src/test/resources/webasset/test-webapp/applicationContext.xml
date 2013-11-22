@@ -15,11 +15,11 @@
   <bean id="messageSource"
     class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basename">
-      <value>/WEB-INF/config/ecstatic</value>
+      <value>/WEB-INF/config/webasset</value>
     </property>
   </bean>
   
-  <bean id="webAssetManager" class="com.ironmarket.ecstatic.WebAssetManager"
+  <bean id="webAssetManager" class="com.denniskubes.webasset.WebAssetManager"
     init-method="initialize" destroy-method="shutdown">
     <property name="rootDirectory" value="${test.webapp.root}" />
     <property name="configDirectory" value="/WEB-INF/config" />

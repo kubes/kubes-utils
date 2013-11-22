@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +13,13 @@ import org.springframework.core.io.Resource;
 
 public class TestWebAssetParser {
 
-  private String parserFolder = "/ecstatic/parser";
+  private String parserFolder = "/webasset/parser";
 
   @Test(expected = IOException.class)
   public void testNonExistingConfig()
     throws Exception { 
     WebAssetParser parser = new WebAssetParser();
-    File nonExistingFile = new File("idontexist.ecf");
+    File nonExistingFile = new File("idontexist.waf");
     parser.parseConfig(nonExistingFile);
   }
 
@@ -28,7 +28,7 @@ public class TestWebAssetParser {
     throws Exception {
     WebAssetParser parser = new WebAssetParser();
     Resource baseJsonRes =
-      new ClassPathResource(parserFolder + "/pabadjson.ecf");
+      new ClassPathResource(parserFolder + "/pabadjson.waf");
     File badJsonFile = baseJsonRes.getFile();
     parser.parseConfig(badJsonFile);
   }
@@ -37,7 +37,7 @@ public class TestWebAssetParser {
   public void testBlankConfig()
     throws Exception {
     WebAssetParser parser = new WebAssetParser();
-    Resource blankRes = new ClassPathResource(parserFolder + "/blank.ecf");
+    Resource blankRes = new ClassPathResource(parserFolder + "/blank.waf");
     File blankFile = blankRes.getFile();
     parser.parseConfig(blankFile);
   }
@@ -46,7 +46,7 @@ public class TestWebAssetParser {
   public void testNoIdsConfig()
     throws Exception {
     WebAssetParser parser = new WebAssetParser();
-    Resource noIdsRes = new ClassPathResource(parserFolder + "/noids.ecf");
+    Resource noIdsRes = new ClassPathResource(parserFolder + "/noids.waf");
     File noIdsFile = noIdsRes.getFile();
     parser.parseConfig(noIdsFile);
   }
@@ -56,7 +56,7 @@ public class TestWebAssetParser {
     throws Exception {
 
     WebAssetParser parser = new WebAssetParser();
-    Resource globalRes = new ClassPathResource(parserFolder + "/global.ecf");
+    Resource globalRes = new ClassPathResource(parserFolder + "/global.waf");
     File globalFile = globalRes.getFile();
     WebAssetConfig globalConfig = parser.parseConfig(globalFile);
 
@@ -105,7 +105,7 @@ public class TestWebAssetParser {
     throws Exception {
 
     WebAssetParser parser = new WebAssetParser();
-    Resource goodRes = new ClassPathResource(parserFolder + "/good.ecf");
+    Resource goodRes = new ClassPathResource(parserFolder + "/good.waf");
     File configFile = goodRes.getFile();
     WebAssetConfig config = parser.parseConfig(configFile);
 

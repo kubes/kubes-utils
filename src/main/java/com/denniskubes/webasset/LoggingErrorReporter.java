@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;

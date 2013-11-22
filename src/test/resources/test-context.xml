@@ -38,7 +38,7 @@
   </bean>
 
   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-    <property name="basePackage" value="com.ironmarket.platform" />
+    <property name="basePackage" value="com.denniskubes" />
     <property name="annotationClass" value="org.springframework.stereotype.Repository" />
   </bean>
                          

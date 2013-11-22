@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,8 @@ import org.springframework.core.io.Resource;
 
 public class TestWebAssetManager {
 
-  private String rootDirectory = "/ecstatic/test-webapp";
-  private String cacheDirectory = "/_ecstatic_cache_";
+  private String rootDirectory = "/webasset/test-webapp";
+  private String cacheDirectory = "/_webasset_cache_";
 
   private boolean matches(String path, String start, String end) {
     boolean matchesStart = StringUtils.startsWith(path, start);
@@ -262,7 +262,7 @@ public class TestWebAssetManager {
     Resource rootResource = new ClassPathResource(rootDirectory);
     String fullRootPath = rootResource.getFile().getPath();
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("ecstatic/test-webapp/WEB-INF/config/ecstatic");
+    messageSource.setBasename("webasset/test-webapp/WEB-INF/config/webasset");
     
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
@@ -284,7 +284,7 @@ public class TestWebAssetManager {
     Resource rootResource = new ClassPathResource(rootDirectory);
     String fullRootPath = rootResource.getFile().getPath();
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("ecstatic/test-webapp/WEB-INF/config/ecstatic");
+    messageSource.setBasename("webasset/test-webapp/WEB-INF/config/webasset");
     
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
@@ -344,7 +344,7 @@ public class TestWebAssetManager {
     Resource rootResource = new ClassPathResource(rootDirectory);
     String fullRootPath = rootResource.getFile().getPath();
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("ecstatic/test-webapp/WEB-INF/config/ecstatic");
+    messageSource.setBasename("webasset/test-webapp/WEB-INF/config/webasset");
     
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);
@@ -382,7 +382,7 @@ public class TestWebAssetManager {
     Resource rootResource = new ClassPathResource(rootDirectory);
     String fullRootPath = rootResource.getFile().getPath();
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("ecstatic/test-webapp/WEB-INF/config/ecstatic");
+    messageSource.setBasename("webasset/test-webapp/WEB-INF/config/webasset");
     
     WebAssetManager wam = new WebAssetManager();
     wam.setRootDirectory(fullRootPath);

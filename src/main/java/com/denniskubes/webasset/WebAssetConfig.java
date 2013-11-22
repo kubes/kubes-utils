@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import java.io.Serializable;
 import java.util.ArrayList;

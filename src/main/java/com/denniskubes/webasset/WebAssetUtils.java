@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import javax.servlet.http.HttpServletRequest;
 

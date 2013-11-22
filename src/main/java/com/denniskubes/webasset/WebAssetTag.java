@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.tags.RequestContextAwareTag;
  * meta tags, and titles.</p>
  * 
  * <p>Options can be set to include global assets and to include dynamic assets.
- * Global assets are configured in the global ecstatic config file. Dynamic
+ * Global assets are configured in the global webasset config file. Dynamic
  * assets are setup in the request by the Spring controller.</p>
  * 
  * <p>There are four different asset type that can be written. The are script,
@@ -65,8 +65,7 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context =
-      RequestContextUtils.getWebApplicationContext(request);
+    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
     WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
@@ -85,8 +84,7 @@ public class WebAssetTag
 
     // dynamic title overrides
     if (includeDynamic) {
-      String dynTitle =
-        (String)request.getAttribute(WebAssetConstants.REQUEST_TITLE);
+      String dynTitle = (String)request.getAttribute(WebAssetConstants.REQUEST_TITLE);
       if (StringUtils.isNotBlank(dynTitle)) {
         title = dynTitle;
       }
@@ -107,14 +105,12 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context =
-      RequestContextUtils.getWebApplicationContext(request);
+    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
     WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
-    Set<Map<String, String>> allScripts =
-      new LinkedHashSet<Map<String, String>>();
+    Set<Map<String, String>> allScripts = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
       List<Map<String, String>> globalScripts = wam.getGlobalScripts(locale);
       if (globalScripts != null && globalScripts.size() > 0) {
@@ -131,8 +127,7 @@ public class WebAssetTag
 
     // include dynamic script tags
     if (includeDynamic) {
-      List<Map<String, String>> requestScripts =
-        (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_SCRIPTS);
+      List<Map<String, String>> requestScripts = (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_SCRIPTS);
       if (requestScripts != null && requestScripts.size() > 0) {
         allScripts.addAll(requestScripts);
       }
@@ -163,14 +158,12 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context =
-      RequestContextUtils.getWebApplicationContext(request);
+    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
     WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
-    Set<Map<String, String>> allLinks =
-      new LinkedHashSet<Map<String, String>>();
+    Set<Map<String, String>> allLinks = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
       List<Map<String, String>> globalLinks = wam.getGlobalLinks(locale);
       if (globalLinks != null && globalLinks.size() > 0) {
@@ -187,8 +180,7 @@ public class WebAssetTag
 
     // include dynamic link tags
     if (includeDynamic) {
-      List<Map<String, String>> requestLinks =
-        (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_LINKS);
+      List<Map<String, String>> requestLinks = (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_LINKS);
       if (requestLinks != null && requestLinks.size() > 0) {
         allLinks.addAll(requestLinks);
       }
@@ -218,14 +210,12 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context =
-      RequestContextUtils.getWebApplicationContext(request);
+    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
     WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
-    Set<Map<String, String>> allMetas =
-      new LinkedHashSet<Map<String, String>>();
+    Set<Map<String, String>> allMetas = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
       List<Map<String, String>> globalMetas = wam.getGlobalMetas(locale);
       if (globalMetas != null && globalMetas.size() > 0) {
@@ -242,8 +232,7 @@ public class WebAssetTag
 
     // include dynamic meta tags
     if (includeDynamic) {
-      List<Map<String, String>> requestLinks =
-        (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_METAS);
+      List<Map<String, String>> requestLinks = (List<Map<String, String>>)request.getAttribute(WebAssetConstants.REQUEST_METAS);
       if (requestLinks != null && requestLinks.size() > 0) {
         allMetas.addAll(requestLinks);
       }
@@ -291,14 +280,15 @@ public class WebAssetTag
       // in the request. an id must be specified either on the tag or in the
       // request, even though they don't have to exist in the configuration
       boolean tagSpecifiedIds = (this.ids != null);
-      String idStr =
-        (tagSpecifiedIds) ? this.ids
-          : (String)request.getAttribute(WebAssetConstants.IDS);
+      String idStr = (tagSpecifiedIds) ? this.ids
+        : (String)request.getAttribute(WebAssetConstants.IDS);
 
       // dedup tag ids, keep in order
       Set<String> ids = new LinkedHashSet<String>();
-      for (String id : StringUtils.split(idStr, ",")) {
-        ids.add(StringUtils.trim(id));
+      if (StringUtils.isNotBlank(idStr)) {
+        for (String id : StringUtils.split(idStr, ",")) {
+          ids.add(StringUtils.trim(id));
+        }
       }
 
       // write out any title tag

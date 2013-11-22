@@ -1,5 +1,5 @@
-Utility classes for spring web developement.  This includes the ecstatic
-web asset management framework.  See unit tests.
+Utility classes for spring web developement.  This includes the web asset 
+management framework.  See unit tests.
 
 Example configuring the PropertyWebappContextInitializer
 
@@ -41,10 +41,10 @@ Example configuring the in PatternReloadableResourceBundleMessageSource in webap
   </bean>
 ```
 
-Example configuring the ecstatic web asset manager in webapp-context.xml
+Example configuring the web asset manager in webapp-context.xml
 
  ```
-  <bean id="webAssetManager" class="com.denniskubes.ecstatic.WebAssetManager"
+  <bean id="webAssetManager" class="com.denniskubes.webasset.WebAssetManager"
     init-method="startup" destroy-method="shutdown">
     <property name="rootDirectory" value="${webapp.root}" />
     <property name="configDirectory" value="/WEB-INF/pages/" />
@@ -53,8 +53,8 @@ Example configuring the ecstatic web asset manager in webapp-context.xml
     <property name="typeToFilters" ref="typeToFilters" />
   </bean>
   
-  <bean id="cssCompressorFilter" class="com.denniskubes.ecstatic.CssCompressorFilter" />
-  <bean id="jsCompressorFilter" class="com.denniskubes.ecstatic.JavascriptCompressorFilter" />
+  <bean id="cssCompressorFilter" class="com.denniskubes.webasset.CssCompressorFilter" />
+  <bean id="jsCompressorFilter" class="com.denniskubes.webasset.JavascriptCompressorFilter" />
   
   <util:map id="webAssetFilters">
     <entry key="cssCompressor" value-ref="cssCompressorFilter" />

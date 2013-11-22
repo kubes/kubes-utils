@@ -1,4 +1,4 @@
-package com.denniskubes.ecstatic;
+package com.denniskubes.webasset;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,7 @@ import com.denniskubes.utils.FileIOUtils;
 public class WebAssetManager
   implements MessageSourceAware {
 
-  private final static Logger LOG = LoggerFactory
-    .getLogger(WebAssetManager.class);
+  private final static Logger LOG = LoggerFactory.getLogger(WebAssetManager.class);
   public final static String GLOBAL = "_global_";
 
   private MessageSource messageSource;
@@ -46,13 +45,14 @@ public class WebAssetManager
   private Map<String, WebAssetConfig> idToConfig = new HashMap<String, WebAssetConfig>();
   private String configDirectory;
   private String rootDirectory;
-  private String cacheDirectory = "_ecstatic_cache_";
-  private String configFileSuffix = ".ecf";
+  private String cacheDirectory = "_webasset_cache_";
+  private String configFileSuffix = ".waf";
   private List<String> assetPrefixes = new ArrayList<String>();
   private Pattern tagPattern = Pattern.compile("(\\$\\{.*?\\})");
-  private boolean removeExistingCacheFiles = false;
+  private boolean overwriteCacheOnFirstRun = false;
   private boolean removeTempResources = true;
-  private boolean clearCacheOnShutdown = false;
+  private boolean clearCacheOnStartup = true;
+  private boolean clearCacheOnShutdown = true;
 
   // config file change monitoring
   private long reloadCheckInterval = 10000;
@@ -247,7 +247,7 @@ public class WebAssetManager
       return false;
     }
 
-    // allow external scripts without modification.  External scripts can be
+    // allow external scripts without modification. External scripts can be
     // http|https|// prefixed.
     if (assetPath.matches("^(https?)?:?//.*")) {
 
@@ -275,17 +275,17 @@ public class WebAssetManager
       try {
 
         LOG.info("Filtering and caching {}", assetFile.getPath());
-        
+
         // remove asset prefixes for cached directory structure, resulting path
         // should be the parent of the asset file with the path prefix removed
         String pathPrefix = assetPath;
-        for (String assetPrefix: assetPrefixes) {
+        for (String assetPrefix : assetPrefixes) {
           if (pathPrefix.startsWith(assetPrefix)) {
             pathPrefix = StringUtils.removeStart(pathPrefix, assetPrefix);
             break;
           }
         }
-        
+
         // remove any starting slash and ending filename and extension
         pathPrefix = FilenameUtils.getPath(pathPrefix);
 
@@ -293,7 +293,7 @@ public class WebAssetManager
         String tempFilename = FilenameUtils.concat(pathPrefix, assetName);
 
         // copy the input file to the temp directory
-        String randomKey = "_ecstatic_work_" + System.currentTimeMillis();
+        String randomKey = "_webasset_work_" + System.currentTimeMillis();
         File workingDir = new File(FileUtils.getTempDirectory(), randomKey);
         File workingFile = new File(workingDir, tempFilename);
         FileUtils.copyFile(assetFile, workingFile);
@@ -321,14 +321,15 @@ public class WebAssetManager
         String filteredPath = workingFile.getPath();
         String filteredExt = FilenameUtils.getExtension(filteredPath);
         String filteredBase = FilenameUtils.getBaseName(filteredPath);
-        String cachedName = filteredBase + ".cache." + crcVal + "." + filteredExt;
+        String cachedName = filteredBase + ".cache." + crcVal + "."
+          + filteredExt;
         String cachedPath = FilenameUtils.concat(pathPrefix, cachedName);
 
         // write the file out to the cache, the parent directories of the
         // file will be created in the cache dir if they don't already exist
         File cacheFile = new File(cacheRoot, cachedPath);
         boolean copyToCache = !cacheFile.exists()
-          || (removeExistingCacheFiles && FileUtils.deleteQuietly(cacheFile));
+          || (overwriteCacheOnFirstRun && FileUtils.deleteQuietly(cacheFile));
         if (copyToCache) {
           FileUtils.writeByteArrayToFile(cacheFile, cachedBytes);
           LOG.info("Added {} to cache as {}", assetFile.getPath(),
@@ -374,21 +375,21 @@ public class WebAssetManager
     // remove all cached assets
     File cacheRoot = new File(rootDirectory, cacheDirectory);
     if (cacheRoot.exists()) {
-      
+
       // collect all files in the cache directory
       List<File> collector = new ArrayList<File>();
       FileIOUtils.collectFiles(collector, cacheRoot, null, true);
-      
+
       // check each file for .cache. and if empty directory remove it
       List<File> cacheDirs = new ArrayList<File>();
       for (File cacheFile : collector) {
-        
+
         // ignore directories on first pass, only focus on files
         if (cacheFile.isDirectory()) {
           cacheDirs.add(cacheFile);
           continue;
         }
-        
+
         // remove cache files
         String name = cacheFile.getName();
         if (cacheFile.exists() && StringUtils.contains(name, ".cache.")) {
@@ -396,7 +397,7 @@ public class WebAssetManager
           FileUtils.deleteQuietly(cacheFile);
         }
       }
-      
+
       // remove any empty web asset cache directories
       for (File cacheDir : cacheDirs) {
         if (cacheDir.exists() && cacheDir.list().length == 0) {
@@ -404,7 +405,7 @@ public class WebAssetManager
           FileUtils.deleteQuietly(cacheDir);
         }
       }
-      
+
       // remove the web asset cache root if it is empty
       if (cacheRoot.exists() && cacheRoot.list().length == 0) {
         LOG.debug("Removed web asset cache root: " + cacheRoot);
@@ -436,14 +437,19 @@ public class WebAssetManager
       }
       LOG.info("Created web asset cache directory: " + tempCache.getPath());
     }
+    
+    // quietly remove the cached assets on disk, start clean
+    if (clearCacheOnStartup) {
+      clearDiskCache();
+    }
 
     // get the root asset directory from the classpath
     File configRoot = new File(rootDirectory, configDirectory);
     if (!configRoot.exists() || !configRoot.canRead()) {
       throw new IOException("No configuration root directory found");
     }
-    
-    // set the default asset prefixes to remove, cached directory structure 
+
+    // set the default asset prefixes to remove, cached directory structure
     // will be the asset path minus the first matched asset prefix
     if (assetPrefixes.isEmpty()) {
       assetPrefixes.add("/WEB-INF/static");
@@ -688,12 +694,12 @@ public class WebAssetManager
     this.messageSource = messageSource;
   }
 
-  public boolean isRemoveExistingCacheFiles() {
-    return removeExistingCacheFiles;
+  public boolean isOverwriteCacheOnFirstRun() {
+    return overwriteCacheOnFirstRun;
   }
 
-  public void setRemoveExistingCacheFiles(boolean removeExistingCacheFiles) {
-    this.removeExistingCacheFiles = removeExistingCacheFiles;
+  public void setOverwriteCacheOnFirstRun(boolean overwriteCacheOnFirstRun) {
+    this.overwriteCacheOnFirstRun = overwriteCacheOnFirstRun;
   }
 
   public boolean isRemoveTempResources() {
@@ -702,6 +708,14 @@ public class WebAssetManager
 
   public void setRemoveTempResources(boolean removeTempResources) {
     this.removeTempResources = removeTempResources;
+  }
+
+  public boolean isClearCacheOnStartup() {
+    return clearCacheOnStartup;
+  }
+
+  public void setClearCacheOnStartup(boolean clearCacheOnStartup) {
+    this.clearCacheOnStartup = clearCacheOnStartup;
   }
 
   public boolean isClearCacheOnShutdown() {
