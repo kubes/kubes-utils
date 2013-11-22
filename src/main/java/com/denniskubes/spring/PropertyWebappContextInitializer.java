@@ -60,8 +60,8 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * <p>The hosts folder is then searched for properties files starting with the
  * ip address or hostname of the server.  For example 192.168.1.1.props.xml.</p>
  * 
- * <p>And finally the users folder is search for properties starting with the
- * current user name as defined in the user.name system property.</p>
+ * <p>The users folder is search for properties starting with the current user 
+ * name as defined in the user.name system property.</p>
  * 
  * <p>Each stage of property loading override any previous properties with the
  * same name.  For instance, environment properties can be set that override the
@@ -76,21 +76,30 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * a folder, for instance envs or hosts, doesn't exist, that stage will simply
  * be ignored.</p>
  * 
+ * <p>A system property named property_files can be specified.  It accepts a
+ * a comma separated list of file paths to load properties from one or more 
+ * external property files.  The external property files are added in the order 
+ * they are specified.  Later files override early files. External property 
+ * files also override properties added in the previous stages.</p>
+ * 
  * @author Dennis Kubes
  */
 public class PropertyWebappContextInitializer
   implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
 
-  private final static Logger LOG =
-    LoggerFactory.getLogger(PropertyWebappContextInitializer.class);
+  private final static Logger LOG = LoggerFactory.getLogger(PropertyWebappContextInitializer.class);
 
-  private void collectFiles(List<File> collector, File root, FileFilter filter) {
-
+  private void collectFiles(List<File> collector, File root, IOFileFilter filter) {
+    
     if (root.exists() && root.isDirectory() && root.canRead()) {
 
       File[] children = null;
       if (filter != null) {
-        children = root.listFiles(filter);
+        
+        // list directories for recursion and files matching the filter
+        FileFilter directoryOrFilter = new OrFileFilter(
+          DirectoryFileFilter.DIRECTORY, filter);
+        children = root.listFiles(directoryOrFilter);
       }
       else {
         children = root.listFiles();
@@ -127,22 +136,20 @@ public class PropertyWebappContextInitializer
 
     // get the property suffix or default to common properties files
     String suffixes = servletContext.getInitParameter("propertyFileSuffix");
-    String[] propertySuffixes =
-      StringUtils.isNotBlank(suffixes) ? StringUtils.split(suffixes, ", ")
-        : new String[]{
-          "props.xml", ".properties"
-        };
+    String[] propertySuffixes = StringUtils.isNotBlank(suffixes)
+      ? StringUtils.split(suffixes, ", ") : new String[] {
+        "props.xml", ".properties"
+      };
 
     // only configure properties if there is a root property directory
     if (propertyRootDir.exists() && propertyRootDir.isDirectory()) {
 
       List<File> propertyFiles = new ArrayList<File>();
       SuffixFileFilter propsFilter = new SuffixFileFilter(propertySuffixes);
-      IOFileFilter dirFilter = DirectoryFileFilter.DIRECTORY;
 
       // get base property files, recurse into directories
       collectFiles(propertyFiles, new File(propertyRootDir, "base"),
-        new OrFileFilter(dirFilter, propsFilter));
+        propsFilter);
 
       // collect property files for environment get any file matching the
       // environment prefix and properties suffix, recurse into directories
@@ -151,8 +158,8 @@ public class PropertyWebappContextInitializer
         File envPropsRoot = new File(propertyRootDir, "envs");
         if (envPropsRoot.exists() && envPropsRoot.isDirectory()) {
           PrefixFileFilter envPrefixFilter = new PrefixFileFilter(envProp);
-          collectFiles(propertyFiles, envPropsRoot, new OrFileFilter(dirFilter,
-            new AndFileFilter(envPrefixFilter, propsFilter)));
+          collectFiles(propertyFiles, envPropsRoot, new AndFileFilter(
+            envPrefixFilter, propsFilter));
         }
       }
 
@@ -163,14 +170,14 @@ public class PropertyWebappContextInitializer
 
         // get the ip address and system hostname
         InetAddress inetAddress = InetAddress.getLocalHost();
-        PrefixFileFilter ipOrHostFilter = new PrefixFileFilter(new String[]{
+        PrefixFileFilter ipOrHostFilter = new PrefixFileFilter(new String[] {
           inetAddress.getHostAddress(), inetAddress.getHostName()
         });
 
         File hostPropsRoot = new File(propertyRootDir, "hosts");
         if (hostPropsRoot.exists() && hostPropsRoot.isDirectory()) {
-          collectFiles(propertyFiles, hostPropsRoot, new OrFileFilter(
-            dirFilter, new AndFileFilter(ipOrHostFilter, propsFilter)));
+          collectFiles(propertyFiles, hostPropsRoot, new AndFileFilter(
+            ipOrHostFilter, propsFilter));
         }
       }
       catch (Exception e) {
@@ -184,8 +191,27 @@ public class PropertyWebappContextInitializer
         File userPropsRoot = new File(propertyRootDir, "users");
         if (userPropsRoot.exists() && userPropsRoot.isDirectory()) {
           PrefixFileFilter userPrefixFilter = new PrefixFileFilter(userProp);
-          collectFiles(propertyFiles, userPropsRoot, new OrFileFilter(
-            dirFilter, new AndFileFilter(userPrefixFilter, propsFilter)));
+          collectFiles(propertyFiles, userPropsRoot, new AndFileFilter(
+            userPrefixFilter, propsFilter));
+        }
+      }
+
+      // collect property files from external locations, if the location is a
+      // file add it, if it is a directory collect all nested property files
+      String externalProps = System.getProperty("property.files");
+      if (StringUtils.isNotBlank(externalProps)) {
+        String[] externalPropPaths = StringUtils.split(externalProps, ",");
+        for (String externalPropPath : externalPropPaths) {
+          File externalPropFile = new File(externalPropPath);
+          if (!externalPropFile.exists()) {
+            continue;
+          }
+          if (externalPropFile.isFile()) {
+            propertyFiles.add(externalPropFile);
+          }
+          else if (externalPropFile.isDirectory()) {
+            collectFiles(propertyFiles, externalPropFile, propsFilter);
+          }
         }
       }
 
@@ -205,7 +231,7 @@ public class PropertyWebappContextInitializer
               properties.load(fis);
             }
             fis.close();
-            
+
             // add the properties to the property sources
             propertySources.addFirst(new PropertiesPropertySource(
               propertyFilename, properties));
