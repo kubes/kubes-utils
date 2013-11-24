@@ -2,7 +2,7 @@ package com.denniskubes.webasset;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility methods for passing request configuration from the Spring controller

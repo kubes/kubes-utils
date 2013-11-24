@@ -49,20 +49,5 @@ Example configuring the web asset manager in webapp-context.xml
     <property name="rootDirectory" value="${webapp.root}" />
     <property name="configDirectory" value="/WEB-INF/pages/" />
     <property name="removeExistingCacheFiles" value="true" />
-    <property name="filters" ref="webAssetFilters" />
-    <property name="typeToFilters" ref="typeToFilters" />
   </bean>
-  
-  <bean id="cssCompressorFilter" class="com.denniskubes.webasset.CssCompressorFilter" />
-  <bean id="jsCompressorFilter" class="com.denniskubes.webasset.JavascriptCompressorFilter" />
-  
-  <util:map id="webAssetFilters">
-    <entry key="cssCompressor" value-ref="cssCompressorFilter" />
-    <entry key="jsCompressor" value-ref="jsCompressorFilter" />
-  </util:map>
-  
-  <util:map id="typeToFilters">
-    <entry key="javascript" value="jsCompressor" />
-    <entry key="stylesheet" value="cssCompressor" />
-  </util:map>
 ```

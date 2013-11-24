@@ -17,7 +17,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -138,7 +138,7 @@ public class PropertyWebappContextInitializer
     String suffixes = servletContext.getInitParameter("propertyFileSuffix");
     String[] propertySuffixes = StringUtils.isNotBlank(suffixes)
       ? StringUtils.split(suffixes, ", ") : new String[] {
-        "props.xml", ".properties"
+        ".properties.xml", ".properties"
       };
 
     // only configure properties if there is a root property directory
