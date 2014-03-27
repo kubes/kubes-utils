@@ -338,11 +338,14 @@ public class WebAssetManager
         else {
           LOG.info("Existing file {} in cache, no copy", cacheFile.getPath());
         }
+        
+        // the display paths must always use url slashes
+        String cachedDisplayPath = StringUtils.replace(cachedPath, "\\", "/");
 
         // cache to prevent filtering of files that haven't changed and have
         // pointer from raw asset to the cached path
         assetLastModTimes.put(assetPath, assetLastModified);
-        pathsCache.put(assetPath, cachedPath);
+        pathsCache.put(assetPath, cachedDisplayPath);
         attributes.put("path", getCachedPath(assetPath));
 
         // quietly remove the working directory used for filtering, any files
