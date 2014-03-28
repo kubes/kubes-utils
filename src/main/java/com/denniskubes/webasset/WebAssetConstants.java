@@ -16,4 +16,7 @@ public interface WebAssetConstants {
   public static final String LINKS = "_webasset_links_";
   public static final String SCRIPTS = "_webasset_scripts_";
   
+  // properties
+  public static final String HOSTNAME = "webasset.host";  
+  
 }

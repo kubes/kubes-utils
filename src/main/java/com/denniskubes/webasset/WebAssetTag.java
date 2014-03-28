@@ -1,6 +1,7 @@
 package com.denniskubes.webasset;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,8 +15,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 
 /**
@@ -44,41 +46,72 @@ public class WebAssetTag
   private String ids;
   private boolean includeGlobal = false;
   private boolean includeDynamic = false;
+  private boolean includeContext = true;
+  private boolean includeHost = true;
 
-  private String withContext(HttpServletRequest request, String cachedPath) {
+  private WebAssetManager getWebAssetManager() {
+    RequestContext rc = getRequestContext();
+    WebApplicationContext context = rc.getWebApplicationContext();
+    return (WebAssetManager)context.getBean("webAssetManager");
+  }
+
+  private String assetUri(HttpServletRequest request, String cachedPath) {
 
     String fullPath = cachedPath;
-    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
-    String contextPath = context.getServletContext().getContextPath();
-    if (!cachedPath.matches("^(https?)?:?//.*")
-      && StringUtils.isNotBlank(contextPath)) {
-      fullPath = contextPath + cachedPath;
+    if (!cachedPath.matches("^(https?)?:?//.*")) {
+
+      StringBuilder pathBuilder = new StringBuilder();
+
+      // allow including a full, possibly configured scheme://host:port
+      if (includeHost) {
+
+        // try and get the hostname from a configuration property but if not
+        // found default back to the server name
+        String host = request.getServerName();
+        try {
+          host = getRequestContext().getMessage(WebAssetConstants.HOSTNAME);
+        }
+        catch (NoSuchMessageException nsme) {
+          // ignore and use default
+        }
+
+        // only send scheme://host:port if host isn't blank
+        if (StringUtils.isNotBlank(host)) {
+
+          String scheme = request.getScheme();
+          pathBuilder.append(scheme);
+          pathBuilder.append("://");
+          pathBuilder.append(host);
+
+          // port is only needed if it isn't standard, i.e. 8080
+          int port = request.getServerPort();
+          if ((StringUtils.equalsIgnoreCase(scheme, "http") && port != 80)
+            || (StringUtils.equalsIgnoreCase(scheme, "https") && port != 443)) {
+            pathBuilder.append(":" + port);
+          }
+        }
+      }
+
+      // allow including a context path
+      if (includeContext) {
+        String contextPath = request.getContextPath();
+        if (StringUtils.isNotBlank(contextPath)) {
+          pathBuilder.append(contextPath);
+        }
+      }
+
+      pathBuilder.append(cachedPath);
+      fullPath = pathBuilder.toString();
     }
+
     return fullPath;
-  }
-
-  public void setTypes(String types) {
-    this.types = types;
-  }
-
-  public void setIds(String ids) {
-    this.ids = ids;
-  }
-
-  public void setIncludeGlobal(boolean includeGlobal) {
-    this.includeGlobal = includeGlobal;
-  }
-
-  public void setIncludeDynamic(boolean includeDynamic) {
-    this.includeDynamic = includeDynamic;
   }
 
   private void writeTitleTag(Set<String> ids)
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
-    WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
+    WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
@@ -117,8 +150,7 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
-    WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
+    WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
@@ -156,7 +188,7 @@ public class WebAssetTag
           scriptTagBuilder.append(" type=\"" + type + "\"");
         }
         if (StringUtils.isNotBlank(src)) {
-          scriptTagBuilder.append(" src=\"" + withContext(request, src) + "\"");
+          scriptTagBuilder.append(" src=\"" + assetUri(request, src) + "\"");
         }
         scriptTagBuilder.append(">");
         scriptTagBuilder.append("</script>");
@@ -170,8 +202,7 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
-    WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
+    WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
@@ -209,7 +240,7 @@ public class WebAssetTag
           linkTagBuilder.append(" type=\"" + type + "\"");
         }
         if (StringUtils.isNotBlank(href)) {
-          linkTagBuilder.append(" href=\"" + withContext(request, href) + "\"");
+          linkTagBuilder.append(" href=\"" + assetUri(request, href) + "\"");
         }
         linkTagBuilder.append(" />");
         out.print(linkTagBuilder.toString() + "\n");
@@ -222,8 +253,7 @@ public class WebAssetTag
     throws IOException {
 
     HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
-    WebAssetManager wam = (WebAssetManager)context.getBean("webAssetManager");
+    WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
 
@@ -333,5 +363,29 @@ public class WebAssetTag
 
   public int doEndTag() {
     return EVAL_PAGE;
+  }
+
+  public void setTypes(String types) {
+    this.types = types;
+  }
+
+  public void setIds(String ids) {
+    this.ids = ids;
+  }
+
+  public void setIncludeGlobal(boolean includeGlobal) {
+    this.includeGlobal = includeGlobal;
+  }
+
+  public void setIncludeDynamic(boolean includeDynamic) {
+    this.includeDynamic = includeDynamic;
+  }
+
+  public void setIncludeContext(boolean includeContext) {
+    this.includeContext = includeContext;
+  }
+
+  public void setIncludeHost(boolean includeHost) {
+    this.includeHost = includeHost;
   }
 }
