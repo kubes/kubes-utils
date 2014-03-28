@@ -3,6 +3,7 @@ package com.denniskubes.webasset;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -534,17 +535,12 @@ public class WebAssetManager
       return null;
     }
 
-    String fullCachedPath = cacheDirectory;
-    if (!StringUtils.startsWith(fullCachedPath, "/")) {
-      fullCachedPath = "/" + fullCachedPath;
-    }
-    if (!StringUtils.endsWith(fullCachedPath, "/")
-      && !StringUtils.startsWith(cachedAsset, "/")) {
-      fullCachedPath += "/";
-    }
-    fullCachedPath += cachedAsset;
+    // ensure consistent paths
+    List<String> pathParts = new ArrayList<String>();
+    pathParts.addAll(Arrays.asList(StringUtils.split(cacheDirectory, "/")));
+    pathParts.addAll(Arrays.asList(StringUtils.split(cachedAsset, "/")));
 
-    return fullCachedPath;
+    return "/" + StringUtils.join(pathParts, "/");
   }
 
   public List<Map<String, String>> getGlobalScripts(Locale locale) {

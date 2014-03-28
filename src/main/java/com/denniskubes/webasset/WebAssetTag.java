@@ -45,6 +45,18 @@ public class WebAssetTag
   private boolean includeGlobal = false;
   private boolean includeDynamic = false;
 
+  private String withContext(HttpServletRequest request, String cachedPath) {
+
+    String fullPath = cachedPath;
+    WebApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
+    String contextPath = context.getServletContext().getContextPath();
+    if (!cachedPath.matches("^(https?)?:?//.*")
+      && StringUtils.isNotBlank(contextPath)) {
+      fullPath = contextPath + cachedPath;
+    }
+    return fullPath;
+  }
+
   public void setTypes(String types) {
     this.types = types;
   }
@@ -144,7 +156,7 @@ public class WebAssetTag
           scriptTagBuilder.append(" type=\"" + type + "\"");
         }
         if (StringUtils.isNotBlank(src)) {
-          scriptTagBuilder.append(" src=\"" + src + "\"");
+          scriptTagBuilder.append(" src=\"" + withContext(request, src) + "\"");
         }
         scriptTagBuilder.append(">");
         scriptTagBuilder.append("</script>");
@@ -197,7 +209,7 @@ public class WebAssetTag
           linkTagBuilder.append(" type=\"" + type + "\"");
         }
         if (StringUtils.isNotBlank(href)) {
-          linkTagBuilder.append(" href=\"" + href + "\"");
+          linkTagBuilder.append(" href=\"" + withContext(request, href) + "\"");
         }
         linkTagBuilder.append(" />");
         out.print(linkTagBuilder.toString() + "\n");
