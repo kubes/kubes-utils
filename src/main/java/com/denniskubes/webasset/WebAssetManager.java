@@ -54,6 +54,8 @@ public class WebAssetManager
   private boolean removeTempResources = true;
   private boolean clearCacheOnStartup = true;
   private boolean clearCacheOnShutdown = true;
+  
+  private String webAssetUrl = null;
 
   // config file change monitoring
   private long reloadCheckInterval = 10000;
@@ -795,6 +797,14 @@ public class WebAssetManager
 
   public void setAssetPrefixes(List<String> assetPrefixes) {
     this.assetPrefixes = assetPrefixes;
+  }
+
+  public String getWebAssetUrl() {
+    return webAssetUrl;
+  }
+
+  public void setWebAssetUrl(String webAssetUrl) {
+    this.webAssetUrl = webAssetUrl;
   }
 
 }

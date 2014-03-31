@@ -1,7 +1,6 @@
 package com.denniskubes.webasset;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,7 +14,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
@@ -65,14 +63,13 @@ public class WebAssetTag
       // allow including a full, possibly configured scheme://host:port
       if (includeHost) {
 
-        // try and get the hostname from a configuration property but if not
+        // try and get the hostname from a the web asset manager but if not
         // found default back to the server name
-        String host = request.getServerName();
-        try {
-          host = getRequestContext().getMessage(WebAssetConstants.HOSTNAME);
-        }
-        catch (NoSuchMessageException nsme) {
-          // ignore and use default
+        WebAssetManager wam = getWebAssetManager();
+        String host = wam.getWebAssetUrl();
+        boolean hasWebAssetUrl = StringUtils.isNotBlank(host);
+        if (!hasWebAssetUrl) {
+          host = request.getServerName();
         }
 
         // only send scheme://host:port if host isn't blank
@@ -83,9 +80,11 @@ public class WebAssetTag
           pathBuilder.append("://");
           pathBuilder.append(host);
 
-          // port is only needed if it isn't standard, i.e. 8080
+          // port is only needed if it isn't standard, (i.e. 8080) and if we 
+          // aren't overriding the web asset url through properties
           int port = request.getServerPort();
-          if ((StringUtils.equalsIgnoreCase(scheme, "http") && port != 80)
+          if (!hasWebAssetUrl
+            && (StringUtils.equalsIgnoreCase(scheme, "http") && port != 80)
             || (StringUtils.equalsIgnoreCase(scheme, "https") && port != 443)) {
             pathBuilder.append(":" + port);
           }
