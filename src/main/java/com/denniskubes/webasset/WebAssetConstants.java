@@ -3,7 +3,6 @@ package com.denniskubes.webasset;
 public interface WebAssetConstants {
 
   // shared
-  public static final String IDS = "_webasset_ids_";  
   public static final String GLOBAL = "_webasset_global_";
   public static final String REQUEST_SCRIPTS = "_webasset_request_scripts_";
   public static final String REQUEST_METAS = "_webasset_request_metatags_";

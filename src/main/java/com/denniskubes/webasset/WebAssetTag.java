@@ -305,8 +305,6 @@ public class WebAssetTag
 
     try {
 
-      HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-
       // get the types of assets for this tag
       Set<String> assetTypes = new HashSet<String>();
       String[] includeTypes = StringUtils.split(types, ",");
@@ -322,7 +320,7 @@ public class WebAssetTag
       // request, even though they don't have to exist in the configuration
       boolean tagSpecifiedIds = (this.ids != null);
       String idStr = (tagSpecifiedIds) ? this.ids
-        : (String)request.getAttribute(WebAssetConstants.IDS);
+        : WebAssetRequest.get();
 
       // dedup tag ids, keep in order
       Set<String> ids = new LinkedHashSet<String>();
