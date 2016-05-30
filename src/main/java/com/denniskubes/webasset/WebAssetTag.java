@@ -46,6 +46,8 @@ public class WebAssetTag
   private boolean includeDynamic = false;
   private boolean includeContext = true;
   private boolean includeHost = true;
+  private boolean includeScheme = false;
+  private String scheme = null;
 
   private WebAssetManager getWebAssetManager() {
     RequestContext rc = getRequestContext();
@@ -75,12 +77,19 @@ public class WebAssetTag
         // only send scheme://host:port if host isn't blank
         if (StringUtils.isNotBlank(host)) {
 
-          String scheme = request.getScheme();
-          pathBuilder.append(scheme);
-          pathBuilder.append("://");
+          // use the universal no scheme by default unless forced or requested
+          // to use the browser scheme
+          if (StringUtils.isNotBlank(scheme)) {
+            pathBuilder.append(scheme);
+          }
+          else if (includeScheme) {
+            String scheme = request.getScheme();
+            pathBuilder.append(scheme + ":");
+          }
+          pathBuilder.append("//");
           pathBuilder.append(host);
 
-          // port is only needed if it isn't standard, (i.e. 8080) and if we 
+          // port is only needed if it isn't standard, (i.e. 8080) and if we
           // aren't overriding the web asset url through properties
           int port = request.getServerPort();
           if (!hasWebAssetUrl
@@ -319,8 +328,7 @@ public class WebAssetTag
       // in the request. an id must be specified either on the tag or in the
       // request, even though they don't have to exist in the configuration
       boolean tagSpecifiedIds = (this.ids != null);
-      String idStr = (tagSpecifiedIds) ? this.ids
-        : WebAssetRequest.get();
+      String idStr = (tagSpecifiedIds) ? this.ids : WebAssetRequest.get();
 
       // dedup tag ids, keep in order
       Set<String> ids = new LinkedHashSet<String>();
@@ -384,5 +392,13 @@ public class WebAssetTag
 
   public void setIncludeHost(boolean includeHost) {
     this.includeHost = includeHost;
+  }
+
+  public void setIncludeScheme(boolean includeScheme) {
+    this.includeScheme = includeScheme;
+  }
+
+  public void setScheme(String scheme) {
+    this.scheme = scheme;
   }
 }

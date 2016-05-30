@@ -45,6 +45,16 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>      
+    <attribute>
+      <name>includeScheme</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+    <attribute>
+      <name>scheme</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
   </tag>
 
 </taglib>
