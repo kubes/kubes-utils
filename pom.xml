@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.denniskubes</groupId>
   <artifactId>kubes-utils</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <url>http://denniskubes.com</url>
-    
+
   <properties>
-    <slf4j.version>1.6.4</slf4j.version>
-    <logback.version>1.0.13</logback.version>
-    <log4j.version>1.2.17</log4j.version>
-    <org.springframework.version>3.2.5.RELEASE</org.springframework.version>  
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+    <slf4j.version>1.7.25</slf4j.version>
+    <logback.version>1.2.3</logback.version>
+    <spring.version>4.3.10.RELEASE</spring.version>
+    <servlet-api.version>4.0.0</servlet-api.version>
+    <servlet.jsp-api.version>2.3.1</servlet.jsp-api.version>
+    <jstl.version>1.2</jstl.version>
+    <el-api.version>3.0.0</el-api.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
@@ -36,12 +38,6 @@
       <version>${slf4j.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
@@ -57,37 +53,52 @@
       <version>${logback.version}</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
-    <!--  Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${org.springframework.version}</version>
+      <version>${spring.version}</version>
     </dependency>
-    
-    <!-- Java Specs -->
+
+    <!-- Servlet, JSP, JSTL -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlet-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>${servlet.jsp-api.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-      <version>1.2</version>
+      <version>${jstl.version}</version>
     </dependency>
-    
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>javax.el-api</artifactId>
+      <version>${el-api.version}</version>
+    </dependency>
+
     <!-- Commons Libraries -->
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -99,7 +110,7 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-            
+
     <!-- Jackson JSON parser -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
@@ -111,7 +122,7 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.12</version>
     </dependency>
-                        
+
   </dependencies>
 
   <build>
@@ -141,7 +152,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.3</version>
-      </plugin>  
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -165,8 +176,8 @@
             </goals>
           </execution>
         </executions>
-      </plugin> 
-    </plugins>      
-  </build>  
-      
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

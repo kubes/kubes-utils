@@ -17,6 +17,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.servlet.ServletContext;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -26,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.web.context.ServletContextAware;
 
 import com.denniskubes.utils.FileIOUtils;
 
@@ -34,12 +39,13 @@ import com.denniskubes.utils.FileIOUtils;
  * assets and their configurations.
  */
 public class WebAssetManager
-  implements MessageSourceAware {
+  implements MessageSourceAware, ServletContextAware {
 
   private final static Logger LOG = LoggerFactory.getLogger(WebAssetManager.class);
   public final static String GLOBAL = "_global_";
 
   private MessageSource messageSource;
+  private ServletContext servletContext;
 
   private AtomicBoolean active = new AtomicBoolean(false);
   private WebAssetParser webAssetParser = new WebAssetParser();
@@ -54,7 +60,7 @@ public class WebAssetManager
   private boolean removeTempResources = true;
   private boolean clearCacheOnStartup = true;
   private boolean clearCacheOnShutdown = true;
-  
+
   private String webAssetUrl = null;
 
   // config file change monitoring
@@ -341,7 +347,7 @@ public class WebAssetManager
         else {
           LOG.info("Existing file {} in cache, no copy", cacheFile.getPath());
         }
-        
+
         // the display paths must always use url slashes
         String cachedDisplayPath = StringUtils.replace(cachedPath, "\\", "/");
 
@@ -424,8 +430,14 @@ public class WebAssetManager
    * Initialize the web asset manager. Loads all of the configuration resources.
    * Starts up file change monitoring.
    */
+  @PostConstruct
   public synchronized void startup()
     throws IOException {
+    
+    // try and set root directory with servlet context if empty
+    if (rootDirectory == null) {
+      rootDirectory = servletContext.getRealPath("/");
+    }
 
     // check that the root directory exists
     File rootCache = new File(rootDirectory);
@@ -443,7 +455,7 @@ public class WebAssetManager
       }
       LOG.info("Created web asset cache directory: " + tempCache.getPath());
     }
-    
+
     // quietly remove the cached assets on disk, start clean
     if (clearCacheOnStartup) {
       clearDiskCache();
@@ -492,6 +504,7 @@ public class WebAssetManager
    * Shutdown the web asset manager. Clears all assets and configs. Clears all
    * caches. Delete the cache directory from the file system.
    */
+  @PreDestroy
   public synchronized void shutdown() {
 
     // set active to false to stop the config file monitoring thread
@@ -805,6 +818,11 @@ public class WebAssetManager
 
   public void setWebAssetUrl(String webAssetUrl) {
     this.webAssetUrl = webAssetUrl;
+  }
+
+  @Override
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
   }
 
 }
