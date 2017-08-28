@@ -7,7 +7,7 @@
   <groupId>com.denniskubes</groupId>
   <artifactId>kubes-utils</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <url>http://denniskubes.com</url>
 
   <properties>
@@ -19,6 +19,8 @@
     <jstl.version>1.2</jstl.version>
     <el-api.version>3.0.0</el-api.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jackson.version>2.9.0</jackson.version>
+    <snakeyaml.version>1.18</snakeyaml.version>
   </properties>
 
   <dependencies>
@@ -111,17 +113,23 @@
       <version>2.4</version>
     </dependency>
 
-    <!-- Jackson JSON parser -->
+    <!-- JSON and YAML parsing -->
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.12</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.12</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyaml.version}</version>
+    </dependency>
+
 
   </dependencies>
 

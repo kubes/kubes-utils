@@ -1,7 +1,7 @@
 {
     "ids": ["good","good2"],
 
-    "title" : "[[good.title]]",
+    "title" : "good title",
        
     "meta" : [
         {

@@ -1,0 +1,4 @@
+---
+id: bad
+json
+title: bad json shouldn't parse

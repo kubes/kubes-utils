@@ -8,7 +8,7 @@
       "alias4" : "/WEB-INF/css/global2.css"            
     },  
     
-    "title" : "[[default.title]]",
+    "title" : "default title",
     
     "meta" : [
         {

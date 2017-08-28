@@ -9,16 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.MappingJsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.BooleanNode;
-import org.codehaus.jackson.node.DoubleNode;
-import org.codehaus.jackson.node.NumericNode;
-import org.codehaus.jackson.node.TextNode;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
 
 /**
  * Utility methods for parsing JSON strings and getting values.
@@ -184,7 +186,7 @@ public class JSON {
 
     JsonNode node = getJsonNode(parent, field);
     if (node != null && !node.isNull() && node instanceof BooleanNode) {
-      return node.getBooleanValue();
+      return node.asBoolean();
     }
     return defaultValue;
   }
@@ -198,12 +200,12 @@ public class JSON {
     List<Boolean> boolVals = new ArrayList<Boolean>();
     if (node != null && !node.isNull()) {
       if (node instanceof BooleanNode) {
-        boolVals.add(node.getBooleanValue());
+        boolVals.add(node.asBoolean());
       }
       else if (node instanceof ArrayNode) {
         for (JsonNode curNode : (ArrayNode)node) {
           if (curNode instanceof BooleanNode) {
-            boolean val = ((BooleanNode)curNode).getBooleanValue();
+            boolean val = ((BooleanNode)curNode).asBoolean();
             boolVals.add(val);
           }
         }
@@ -220,7 +222,7 @@ public class JSON {
 
     JsonNode node = getJsonNode(parent, field);
     if (node != null && !node.isNull() && node instanceof NumericNode) {
-      return node.getIntValue();
+      return node.asInt();
     }
     return defaultValue;
   }
@@ -234,12 +236,12 @@ public class JSON {
     List<Integer> intVals = new ArrayList<Integer>();
     if (node != null && !node.isNull()) {
       if (node instanceof NumericNode) {
-        intVals.add(node.getIntValue());
+        intVals.add(node.asInt());
       }
       else if (node instanceof ArrayNode) {
         for (JsonNode curNode : (ArrayNode)node) {
           if (curNode instanceof NumericNode) {
-            int val = ((NumericNode)curNode).getIntValue();
+            int val = ((NumericNode)curNode).asInt();
             intVals.add(val);
           }
         }
@@ -256,7 +258,7 @@ public class JSON {
 
     JsonNode node = getJsonNode(parent, field);
     if (node != null && !node.isNull() && node instanceof NumericNode) {
-      return node.getLongValue();
+      return node.asLong();
     }
     return defaultValue;
   }
@@ -270,12 +272,12 @@ public class JSON {
     List<Long> longVals = new ArrayList<Long>();
     if (node != null && !node.isNull()) {
       if (node instanceof NumericNode) {
-        longVals.add(node.getLongValue());
+        longVals.add(node.asLong());
       }
       else if (node instanceof ArrayNode) {
         for (JsonNode curNode : (ArrayNode)node) {
           if (curNode instanceof NumericNode) {
-            long val = ((NumericNode)curNode).getLongValue();
+            long val = ((NumericNode)curNode).asLong();
             longVals.add(val);
           }
         }
@@ -293,7 +295,7 @@ public class JSON {
 
     JsonNode node = getJsonNode(parent, field);
     if (node != null && !node.isNull() && node instanceof DoubleNode) {
-      return node.getDoubleValue();
+      return node.asDouble();
     }
     return defaultValue;
   }
@@ -307,12 +309,12 @@ public class JSON {
     List<Double> doubleVals = new ArrayList<Double>();
     if (node != null && !node.isNull()) {
       if (node instanceof DoubleNode) {
-        doubleVals.add(node.getDoubleValue());
+        doubleVals.add(node.asDouble());
       }
       else if (node instanceof ArrayNode) {
         for (JsonNode curNode : (ArrayNode)node) {
           if (curNode instanceof DoubleNode) {
-            double val = ((DoubleNode)curNode).getDoubleValue();
+            double val = ((DoubleNode)curNode).asDouble();
             doubleVals.add(val);
           }
         }
@@ -325,7 +327,7 @@ public class JSON {
 
     List<String> fieldnames = new ArrayList<String>();
     if (parent != null && !parent.isNull()) {
-      Iterator<String> fieldnameIt = parent.getFieldNames();
+      Iterator<String> fieldnameIt = parent.fieldNames();
       while (fieldnameIt.hasNext()) {
         String fieldName = fieldnameIt.next();
         fieldnames.add(fieldName);
@@ -338,13 +340,32 @@ public class JSON {
 
     Map<String, JsonNode> fields = new LinkedHashMap<String, JsonNode>();
     if (parent != null && !parent.isNull()) {
-      Iterator<String> fieldnameIt = parent.getFieldNames();
+      Iterator<String> fieldnameIt = parent.fieldNames();
       while (fieldnameIt.hasNext()) {
         String fieldname = fieldnameIt.next();
         fields.put(fieldname, parent.get(fieldname));
       }
     }
     return fields;
+  }
+  
+  /**
+   * Returns a key value Map from a JSON node. This is used in custom asset
+   * configuration, such as meta tags.
+   * 
+   * @param node The node to extract key value pairs from.
+   * 
+   * @return A Map containing the key value attribute pairs.
+   */
+  public static Map<String, String> getAttributes(JsonNode node) {
+    Map<String, String> attrMap = new LinkedHashMap<String, String>();
+    for (String fieldname : JSON.getFieldnames(node)) {
+      String value = JSON.getString(node, fieldname);
+      if (StringUtils.isNotBlank(value)) {
+        attrMap.put(fieldname, value);
+      }
+    }
+    return attrMap;
   }
 
 }

@@ -1,0 +1,16 @@
+---
+  ids:
+    - good
+    - good2
+   
+  title: good title
+  
+  meta:
+    - name: keywords
+      content: good keywords
+  
+  scripts:
+    - /WEB-INF/js/good.js
+    
+  links:
+    - /WEB-INF/css/good.css
