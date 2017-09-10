@@ -15,10 +15,12 @@ public class YamlWebAssetConfigParser
 
   private Map<String, String> getAttributes(Map<String, Object> node) {
     Map<String, String> attrMap = new LinkedHashMap<String, String>();
-    for (String fieldname : node.keySet()) {
-      String value = (String)node.get(fieldname);
-      if (StringUtils.isNotBlank(value)) {
-        attrMap.put(fieldname, value);
+    if (node != null) {
+      for (String fieldname : node.keySet()) {
+        String value = (String)node.get(fieldname);
+        if (StringUtils.isNotBlank(value)) {
+          attrMap.put(fieldname, value);
+        }
       }
     }
     return attrMap;

@@ -2,6 +2,7 @@ package com.denniskubes.webasset;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -298,7 +299,9 @@ public class WebAssetManager
         // remove any starting slash and ending filename and extension
         pathPrefix = FilenameUtils.getPath(pathPrefix);
 
-        String assetName = FilenameUtils.getName(assetFile.getPath());
+        String assetFilePath = assetFile.getPath();
+        String assetName = FilenameUtils.getName(assetFilePath);
+        String assetExt = FilenameUtils.getExtension(assetFilePath);
         String tempFilename = FilenameUtils.concat(pathPrefix, assetName);
 
         // copy the input file to the temp directory
@@ -307,8 +310,8 @@ public class WebAssetManager
         File workingFile = new File(workingDir, tempFilename);
         FileUtils.copyFile(assetFile, workingFile);
 
-        // run through the filter chain for the filetype
-        String[] filterNames = typeToFilters.get(attributes.get("filtertype"));
+        // run through the filter chain for the filetype by extension
+        String[] filterNames = typeToFilters.get(assetExt);
         if (filterNames != null) {
           for (String filterName : filterNames) {
             WebAssetFilter filter = filters.get(filterName);
@@ -433,9 +436,9 @@ public class WebAssetManager
   @PostConstruct
   public synchronized void startup()
     throws IOException {
-    
+
     // try and set root directory with servlet context if empty
-    if (rootDirectory == null) {
+    if (servletContext != null && StringUtils.isBlank(rootDirectory)) {
       rootDirectory = servletContext.getRealPath("/");
     }
 
@@ -581,9 +584,6 @@ public class WebAssetManager
 
         // resolving the aliases creates a copy of the script config
         Map<String, String> scriptAttrs = resolveAll(scriptConfig, locale);
-        if (!scriptAttrs.containsKey("filter")) {
-          scriptAttrs.put("filtertype", "javascript");
-        }
 
         // script was successfully filtered and cached
         if (filterAndCache(scriptAttrs)) {
@@ -622,9 +622,6 @@ public class WebAssetManager
 
         // resolving the aliases creates a copy of the script config
         Map<String, String> linkAttrs = resolveAll(linkConfig, locale);
-        if (!linkAttrs.containsKey("filter")) {
-          linkAttrs.put("filtertype", "stylesheet");
-        }
 
         // stylesheet was successfully filtered and cached
         if (filterAndCache(linkAttrs)) {

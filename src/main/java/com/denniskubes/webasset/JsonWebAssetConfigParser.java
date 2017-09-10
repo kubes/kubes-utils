@@ -5,6 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denniskubes.utils.JSON;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -12,9 +15,12 @@ import com.fasterxml.jackson.databind.node.TextNode;
 public class JsonWebAssetConfigParser
   implements WebAssetConfigParser {
 
+  private final static Logger LOG = LoggerFactory.getLogger(JsonWebAssetConfigParser.class);
+
   private JsonNode root;
 
   public JsonWebAssetConfigParser(String jsonConfig) {
+    
     root = JSON.parse(jsonConfig);
     if (root == null) {
       throw new IllegalArgumentException("Couldn't parse config json");

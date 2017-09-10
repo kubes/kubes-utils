@@ -40,6 +40,8 @@ import org.springframework.web.servlet.tags.RequestContextAwareTag;
 public class WebAssetTag
   extends RequestContextAwareTag {
 
+  private final static String PATH = "path";
+
   private String types;
   private String ids;
   private boolean includeGlobal = false;
@@ -69,8 +71,7 @@ public class WebAssetTag
         // found default back to the server name
         WebAssetManager wam = getWebAssetManager();
         String host = wam.getWebAssetUrl();
-        boolean hasWebAssetUrl = StringUtils.isNotBlank(host);
-        if (!hasWebAssetUrl) {
+        if (StringUtils.isBlank(host)) {
           host = request.getServerName();
         }
 
@@ -92,9 +93,8 @@ public class WebAssetTag
           // port is only needed if it isn't standard, (i.e. 8080) and if we
           // aren't overriding the web asset url through properties
           int port = request.getServerPort();
-          if (!hasWebAssetUrl
-            && (StringUtils.equalsIgnoreCase(scheme, "http") && port != 80)
-            || (StringUtils.equalsIgnoreCase(scheme, "https") && port != 443)) {
+
+          if (port != 80 && port != 443) {
             pathBuilder.append(":" + port);
           }
         }
@@ -189,15 +189,23 @@ public class WebAssetTag
     if (allScripts.size() > 0) {
       for (Map<String, String> scriptAttrs : allScripts) {
         StringBuilder scriptTagBuilder = new StringBuilder();
-        String type = scriptAttrs.get("type");
-        String src = scriptAttrs.get("path");
         scriptTagBuilder.append("<script");
-        if (StringUtils.isNotBlank(type)) {
-          scriptTagBuilder.append(" type=\"" + type + "\"");
+
+        String path = scriptAttrs.get(PATH);
+        if (StringUtils.isNotBlank(path)) {
+          scriptTagBuilder.append(" src=\"" + assetUri(request, path) + "\"");
         }
-        if (StringUtils.isNotBlank(src)) {
-          scriptTagBuilder.append(" src=\"" + assetUri(request, src) + "\"");
+
+        for (String attr : scriptAttrs.keySet()) {
+          if (attr.equals("path")) {
+            continue;
+          }
+          String attrVal = scriptAttrs.get(attr);
+          if (StringUtils.isNotBlank(attrVal)) {
+            scriptTagBuilder.append(String.format(" %s=\"%s\"", attr, attrVal));
+          }
         }
+
         scriptTagBuilder.append(">");
         scriptTagBuilder.append("</script>");
         out.print(scriptTagBuilder.toString() + "\n");
@@ -241,14 +249,20 @@ public class WebAssetTag
     if (allLinks.size() > 0) {
       for (Map<String, String> linkAttrs : allLinks) {
         StringBuilder linkTagBuilder = new StringBuilder();
-        String type = linkAttrs.get("type");
-        String href = linkAttrs.get("path");
         linkTagBuilder.append("<link rel=\"stylesheet\"");
-        if (StringUtils.isNotBlank(type)) {
-          linkTagBuilder.append(" type=\"" + type + "\"");
+
+        String path = linkAttrs.get(PATH);
+        if (StringUtils.isNotBlank(path)) {
+          linkTagBuilder.append(" href=\"" + assetUri(request, path) + "\"");
         }
-        if (StringUtils.isNotBlank(href)) {
-          linkTagBuilder.append(" href=\"" + assetUri(request, href) + "\"");
+        for (String attr : linkAttrs.keySet()) {
+          if (attr.equals(PATH)) {
+            continue;
+          }
+          String attrVal = linkAttrs.get(attr);
+          if (StringUtils.isNotBlank(attrVal)) {
+            linkTagBuilder.append(String.format(" %s=\"%s\"", attr, attrVal));
+          }
         }
         linkTagBuilder.append(" />");
         out.print(linkTagBuilder.toString() + "\n");
