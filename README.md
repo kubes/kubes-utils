@@ -231,3 +231,8 @@ By default context paths and full hostnames are included but it is configurable.
     </html>
 
 By default context paths and various OS file system paths are handled correctly.
+
+## License and Bug Fixes
+
+These works are public domain or licensed under the Apache Licene. You can do anything you want with them.  Please feel free to send any improvements or 
+bug fixes.
