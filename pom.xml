@@ -7,7 +7,7 @@
   <groupId>com.denniskubes</groupId>
   <artifactId>kubes-utils</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <url>http://denniskubes.com</url>
 
   <properties>

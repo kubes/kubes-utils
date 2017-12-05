@@ -49,7 +49,7 @@ public class WebAssetParser {
 
     WebAssetConfigParser parser = null;
     if (StringUtils.startsWith(configStr, "---")) {
-      LOG.info("Using yaml config parser");
+      LOG.debug("Using yaml config parser");
       parser = new YamlWebAssetConfigParser(configStr);
     }
     else {
@@ -58,20 +58,20 @@ public class WebAssetParser {
     }
 
     WebAssetConfig webAssetConfig = new WebAssetConfig();
-    LOG.info("Getting global");
+    LOG.debug("Getting global");
     webAssetConfig.setGlobalConfig(parser.isGlobal());
 
     // get the ids for the config, global configs don't have ids but they do
     // have aliases
     if (webAssetConfig.isGlobalConfig()) {
-      LOG.info("Global, getting aliases");
+      LOG.debug("Global, getting aliases");
       Map<String, String> aliases = parser.getAliases();
       if (aliases != null && aliases.size() > 0) {
         webAssetConfig.getAliases().putAll(aliases);
       }
     }
     else {
-      LOG.info("Local getting ids");
+      LOG.debug("Local getting ids");
       List<String> ids = parser.getIds();
       if (ids == null || ids.size() == 0) {
         throw new IllegalArgumentException("Web asset config must "
@@ -81,28 +81,28 @@ public class WebAssetParser {
     }
 
     // add the title
-    LOG.info("Getting title");
+    LOG.debug("Getting title");
     String title = parser.getTitle();
     if (StringUtils.isNotBlank(title)) {
       webAssetConfig.setTitle(title);
     }
 
     // get meta tag configs
-    LOG.info("Getting metas");
+    LOG.debug("Getting metas");
     List<Map<String, String>> metas = parser.getMetas();
     if (metas != null && metas.size() > 0) {
       webAssetConfig.getMetas().addAll(metas);
     }
 
     // get script tag configs
-    LOG.info("Getting scripts");
+    LOG.debug("Getting scripts");
     List<Map<String, String>> scripts = parser.getScripts();
     if (scripts != null && scripts.size() > 0) {
       webAssetConfig.getScripts().addAll(scripts);
     }
     
     // get link tag configs
-    LOG.info("Getting links");
+    LOG.debug("Getting links");
     List<Map<String, String>> links = parser.getLinks();
     if (links != null && links.size() > 0) {
       webAssetConfig.getLinks().addAll(links);

@@ -47,7 +47,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * </pre>
  * 
  * <p>The initializer start with properties from the base folder.  By default
- * all .properties and *props.xml files will be loaded.  You can override the 
+ * all .properties and *properties.xml files will be loaded.  You can override the 
  * property file suffixes to match using an init-param named propertyFileSuffix.
  * The base folder is considered the core properties folder for the application
  * that holds the default properties.</p>

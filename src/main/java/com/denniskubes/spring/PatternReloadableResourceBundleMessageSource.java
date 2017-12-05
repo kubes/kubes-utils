@@ -18,8 +18,7 @@ import org.springframework.core.io.Resource;
 public class PatternReloadableResourceBundleMessageSource
   extends ReloadableResourceBundleMessageSource {
 
-  private final static Logger LOG = LoggerFactory
-    .getLogger(PatternReloadableResourceBundleMessageSource.class);
+  private final static Logger LOG = LoggerFactory.getLogger(PatternReloadableResourceBundleMessageSource.class);
 
   public void setResources(Resource[] resources) {
 
