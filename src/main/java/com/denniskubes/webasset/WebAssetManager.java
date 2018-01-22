@@ -2,7 +2,6 @@ package com.denniskubes.webasset;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -160,6 +159,10 @@ public class WebAssetManager
         else {
           // connect id to config
           for (String id : assetConfig.getIds()) {
+            if (idToConfig.containsKey(id)) {
+              throw new IllegalStateException("Duplicate config id " + id
+                + " found");
+            }
             idToConfig.put(id, assetConfig);
           }
         }
