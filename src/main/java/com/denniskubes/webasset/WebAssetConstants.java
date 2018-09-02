@@ -8,6 +8,7 @@ public interface WebAssetConstants {
   public static final String REQUEST_METAS = "_webasset_request_metatags_";
   public static final String REQUEST_LINKS = "_webasset_request_links_";
   public static final String REQUEST_TITLE = "_webasset_request_title_";
+  public static final String PROFILE = "_webasset_profile_";
   
   // output in request
   public static final String TITLE = "_webasset_title_";

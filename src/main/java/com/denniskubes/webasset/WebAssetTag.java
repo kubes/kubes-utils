@@ -122,13 +122,14 @@ public class WebAssetTag
     WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
+    String profile = (String)request.getAttribute(WebAssetConstants.PROFILE);
 
     // start out with the global title
     String title = wam.getGlobalTitle(locale);
 
     // use only the first title found for an id, can't have multiple
     for (String id : ids) {
-      String idTitle = wam.getTitleForId(id, locale);
+      String idTitle = wam.getTitleForId(id, locale, profile);
       if (StringUtils.isNotBlank(idTitle)) {
         title = idTitle;
         break;
@@ -161,6 +162,7 @@ public class WebAssetTag
     WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
+    String profile = (String)request.getAttribute(WebAssetConstants.PROFILE);
 
     Set<Map<String, String>> allScripts = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
@@ -171,7 +173,8 @@ public class WebAssetTag
     }
 
     for (String id : ids) {
-      List<Map<String, String>> idScripts = wam.getScriptsForId(id, locale);
+      List<Map<String, String>> idScripts = wam.getScriptsForId(id, locale,
+        profile);
       if (idScripts != null && idScripts.size() > 0) {
         allScripts.addAll(idScripts);
       }
@@ -221,6 +224,7 @@ public class WebAssetTag
     WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
+    String profile = (String)request.getAttribute(WebAssetConstants.PROFILE);
 
     Set<Map<String, String>> allLinks = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
@@ -231,7 +235,7 @@ public class WebAssetTag
     }
 
     for (String id : ids) {
-      List<Map<String, String>> idLinks = wam.getLinksForId(id, locale);
+      List<Map<String, String>> idLinks = wam.getLinksForId(id, locale, profile);
       if (idLinks != null && idLinks.size() > 0) {
         allLinks.addAll(idLinks);
       }
@@ -278,6 +282,7 @@ public class WebAssetTag
     WebAssetManager wam = getWebAssetManager();
     JspWriter out = pageContext.getOut();
     Locale locale = request.getLocale();
+    String profile = (String)request.getAttribute(WebAssetConstants.PROFILE);
 
     Set<Map<String, String>> allMetas = new LinkedHashSet<Map<String, String>>();
     if (includeGlobal) {
@@ -288,7 +293,7 @@ public class WebAssetTag
     }
 
     for (String id : ids) {
-      List<Map<String, String>> idMetas = wam.getMetasForId(id, locale);
+      List<Map<String, String>> idMetas = wam.getMetasForId(id, locale, profile);
       if (idMetas != null && idMetas.size() > 0) {
         allMetas.addAll(idMetas);
       }

@@ -159,10 +159,6 @@ public class WebAssetManager
         else {
           // connect id to config
           for (String id : assetConfig.getIds()) {
-            if (idToConfig.containsKey(id)) {
-              throw new IllegalStateException("Duplicate config id " + id
-                + " found");
-            }
             idToConfig.put(id, assetConfig);
           }
         }
@@ -182,10 +178,11 @@ public class WebAssetManager
    * 
    * @param input The input to check for aliases and messages.
    * @param Locale The current locale.
+   * @param profile The optional current profile.
    * 
    * @return The interpolated alias value.
    */
-  private String resolve(String input, Locale locale) {
+  private String resolve(String input, Locale locale, String profile) {
 
     if (StringUtils.isNotBlank(input) && StringUtils.contains(input, "${")
       && StringUtils.contains(input, "}")) {
@@ -198,6 +195,9 @@ public class WebAssetManager
         code = StringUtils.removeEnd(code, "}");
         if (aliasesCache.containsKey(code)) {
           tagMatcher.appendReplacement(buffer, aliasesCache.get(code));
+        }
+        else if (StringUtils.equals(code, "profile")) {
+          tagMatcher.appendReplacement(buffer, profile != null ? profile : "");
         }
         else {
           String message;
@@ -224,21 +224,30 @@ public class WebAssetManager
    * 
    * @param keyVals The Map of keys and values to check and replace aliases.
    * @param Locale The current locale.
+   * @param profile The optional current profile.
    * 
    * @return A new Map of keys to interpolated alias values or original values
    * if the value didn't contain an alias.
    */
   private Map<String, String> resolveAll(Map<String, String> keyVals,
-    Locale locale) {
+    Locale locale, String profile) {
 
     // loop through the key value map checking for aliases, replacing any
     // aliases in values if they are found
     Map<String, String> replaced = new LinkedHashMap<String, String>();
     for (Entry<String, String> keyVal : keyVals.entrySet()) {
-      String value = resolve(keyVal.getValue(), locale);
+      String value = resolve(keyVal.getValue(), locale, profile);
       replaced.put(keyVal.getKey(), value);
     }
     return replaced;
+  }
+  
+  private String getCacheKey(String id, Locale locale, String profile) {
+    String cacheKey = id + "_" + StringUtils.lowerCase(locale.toString());
+    if (StringUtils.isNotBlank(profile)) {
+      cacheKey += "_" + profile;
+    }
+    return cacheKey;
   }
 
   /**
@@ -565,13 +574,14 @@ public class WebAssetManager
   }
 
   public List<Map<String, String>> getGlobalScripts(Locale locale) {
-    return getScriptsForId(GLOBAL, locale);
+    return getScriptsForId(GLOBAL, locale, null);
   }
 
-  public List<Map<String, String>> getScriptsForId(String id, Locale locale) {
+  public List<Map<String, String>> getScriptsForId(String id, Locale locale,
+    String profile) {
 
     // check the cache first
-    String cacheKey = id + "_" + StringUtils.lowerCase(locale.toString());
+    String cacheKey = getCacheKey(id, locale, profile);
     if (caching && scriptsCache.containsKey(cacheKey)) {
       return scriptsCache.get(cacheKey);
     }
@@ -586,7 +596,8 @@ public class WebAssetManager
       for (Map<String, String> scriptConfig : scriptConfigs) {
 
         // resolving the aliases creates a copy of the script config
-        Map<String, String> scriptAttrs = resolveAll(scriptConfig, locale);
+        Map<String, String> scriptAttrs = resolveAll(scriptConfig, locale,
+          profile);
 
         // script was successfully filtered and cached
         if (filterAndCache(scriptAttrs)) {
@@ -603,13 +614,14 @@ public class WebAssetManager
   }
 
   public List<Map<String, String>> getGlobalLinks(Locale locale) {
-    return getLinksForId(GLOBAL, locale);
+    return getLinksForId(GLOBAL, locale, null);
   }
 
-  public List<Map<String, String>> getLinksForId(String id, Locale locale) {
+  public List<Map<String, String>> getLinksForId(String id, Locale locale,
+    String profile) {
 
     // check the cache first
-    String cacheKey = id + "_" + StringUtils.lowerCase(locale.toString());
+    String cacheKey = getCacheKey(id, locale, profile);
     if (caching && linksCache.containsKey(cacheKey)) {
       return linksCache.get(cacheKey);
     }
@@ -624,7 +636,7 @@ public class WebAssetManager
       for (Map<String, String> linkConfig : linkConfigs) {
 
         // resolving the aliases creates a copy of the script config
-        Map<String, String> linkAttrs = resolveAll(linkConfig, locale);
+        Map<String, String> linkAttrs = resolveAll(linkConfig, locale, profile);
 
         // stylesheet was successfully filtered and cached
         if (filterAndCache(linkAttrs)) {
@@ -641,13 +653,14 @@ public class WebAssetManager
   }
 
   public List<Map<String, String>> getGlobalMetas(Locale locale) {
-    return getMetasForId(GLOBAL, locale);
+    return getMetasForId(GLOBAL, locale, null);
   }
 
-  public List<Map<String, String>> getMetasForId(String id, Locale locale) {
+  public List<Map<String, String>> getMetasForId(String id, Locale locale,
+    String profile) {
 
     // check the cache first
-    String cacheKey = id + "_" + StringUtils.lowerCase(locale.toString());
+    String cacheKey = getCacheKey(id, locale, profile);
     if (caching && metaCache.containsKey(cacheKey)) {
       return metaCache.get(cacheKey);
     }
@@ -661,7 +674,7 @@ public class WebAssetManager
       // resolve any aliases and cache
       List<Map<String, String>> metaConfigs = assetConfig.getMetas();
       for (Map<String, String> metaConfig : metaConfigs) {
-        Map<String, String> metaAttrs = resolveAll(metaConfig, locale);
+        Map<String, String> metaAttrs = resolveAll(metaConfig, locale, profile);
         metas.add(metaAttrs);
       }
 
@@ -674,13 +687,13 @@ public class WebAssetManager
   }
 
   public String getGlobalTitle(Locale locale) {
-    return getTitleForId(GLOBAL, locale);
+    return getTitleForId(GLOBAL, locale, null);
   }
 
-  public String getTitleForId(String id, Locale locale) {
+  public String getTitleForId(String id, Locale locale, String profile) {
 
     // check the cache first
-    String cacheKey = id + "_" + StringUtils.lowerCase(locale.toString());
+    String cacheKey = getCacheKey(id, locale, profile);
     if (caching && titleCache.containsKey(cacheKey)) {
       return titleCache.get(cacheKey);
     }
@@ -692,7 +705,7 @@ public class WebAssetManager
 
       title = assetConfig.getTitle();
       if (StringUtils.isNotBlank(title)) {
-        title = resolve(title, locale);
+        title = resolve(title, locale, profile);
       }
 
       if (caching) {
