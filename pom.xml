@@ -21,6 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.10.1</jackson.version>
     <snakeyaml.version>1.18</snakeyaml.version>
+    <junit.version>4.10</junit.version>
   </properties>
 
   <dependencies>
@@ -29,8 +30,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.10</version>
-      <scope>test</scope>
+      <version>${junit.version}</version>
     </dependency>
 
     <!-- Logging through slf4j and logback -->
