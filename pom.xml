@@ -21,7 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.10.1</jackson.version>
     <snakeyaml.version>1.18</snakeyaml.version>
-    <junit.version>4.10</junit.version>
+    <junit.version>4.13.1</junit.version>
   </properties>
 
   <dependencies>
