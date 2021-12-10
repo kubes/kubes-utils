@@ -7,21 +7,21 @@
   <groupId>com.denniskubes</groupId>
   <artifactId>kubes-utils</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
   <url>http://denniskubes.com</url>
 
   <properties>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
     <logback.version>1.2.3</logback.version>
-    <spring.version>4.3.10.RELEASE</spring.version>
+    <spring.version>5.1.20.RELEASE</spring.version>
     <servlet-api.version>4.0.0</servlet-api.version>
     <servlet.jsp-api.version>2.3.1</servlet.jsp-api.version>
     <jstl.version>1.2</jstl.version>
     <el-api.version>3.0.0</el-api.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.version>2.10.1</jackson.version>
-    <snakeyaml.version>1.18</snakeyaml.version>
-    <junit.version>4.10</junit.version>
+    <jackson.version>2.12.1</jackson.version>
+    <snakeyaml.version>1.29</snakeyaml.version>
+    <junit.version>4.13.2</junit.version>
   </properties>
 
   <dependencies>
@@ -110,7 +110,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.4</version>
+      <version>2.11.0</version>
     </dependency>
 
     <!-- JSON and YAML parsing -->
@@ -152,8 +152,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.5.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
