@@ -13,7 +13,7 @@
   <properties>
     <slf4j.version>1.7.32</slf4j.version>
     <logback.version>1.2.3</logback.version>
-    <spring.version>5.1.20.RELEASE</spring.version>
+    <spring.version>5.3.18</spring.version>
     <servlet-api.version>4.0.0</servlet-api.version>
     <servlet.jsp-api.version>2.3.1</servlet.jsp-api.version>
     <jstl.version>1.2</jstl.version>
