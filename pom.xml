@@ -20,7 +20,7 @@
     <el-api.version>3.0.0</el-api.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.12.1</jackson.version>
-    <snakeyaml.version>1.29</snakeyaml.version>
+    <snakeyaml.version>1.31</snakeyaml.version>
     <junit.version>4.13.2</junit.version>
   </properties>
 
